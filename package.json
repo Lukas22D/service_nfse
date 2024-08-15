@@ -13,8 +13,10 @@
     "sucrase": "^3.35.0"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "xml2js": "^0.6.2"
   }
 }

@@ -17,6 +17,15 @@ class routes {
     this.router.get("/", (req, res) => { 
       return res.json({ message: "ON!" });
     });
+
+    // Rota de teste
+    this.router.post("/teste", (req, res) => {
+      if(req.is("application/xml")){
+        return res.json({ message: "XML!"});
+      }else{
+        return res.status(400).json({ message:'d' });
+      }
+    });
   }
 }
 
