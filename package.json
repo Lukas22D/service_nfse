@@ -1,0 +1,20 @@
+{
+  "name": "service_nfse",
+  "version": "1.0.0",
+  "description": "Serviço de comunicação NFS-e com as prefeituras.",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon ./src/server.js"
+  },
+  "author": "Lucas Silva Rocha",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "sucrase": "^3.35.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
