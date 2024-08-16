@@ -5,9 +5,8 @@ class NfseController {
     
     async create_consult(req, res) {
         try{
-            const { periodo_inicial, periodo_final, cnpj_tomado } = req.body;
-            const nfseServiceBarueri = new NfseServiceBarueri(periodo_inicial, periodo_final, cnpj_tomado);
-            const result = await nfseServiceBarueri.consultarNFeRecebidaPeriodo();
+            const {competencia , cnpj_tomado } = req.body;
+            const result = await NfseServiceBarueri.consultarNFeRecebidaCompetencia(cnpj_tomado, competencia);
             return res.status(result.status).json(result.message);
         }catch(error){
             return res.status(400).json({ message: 'Erro ao consultar o webservice: ', error });
