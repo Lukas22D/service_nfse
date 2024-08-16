@@ -1,4 +1,5 @@
 import { Router } from "express";
+import nfse_controller from "./controllers/nfse_controller";
 
 
 /**
@@ -11,7 +12,10 @@ class routes {
     this.router = Router(); // Inicializa o router
     this.routes(); // Chama a função routes
   }
-
+  /**
+   * @method routes
+   * Função responsável por criar as rotas da aplicação
+   */
   routes() {
     // Rota inicial
     this.router.get("/", (req, res) => { 
@@ -19,13 +23,7 @@ class routes {
     });
 
     // Rota de teste
-    this.router.post("/teste", (req, res) => {
-      if(req.is("application/xml")){
-        return res.json({ message: "XML!"});
-      }else{
-        return res.status(400).json({ message:'d' });
-      }
-    });
+    this.router.post("/teste",  nfse_controller.create_consult);
   }
 }
 
