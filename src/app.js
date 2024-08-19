@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import routes from './routes';
 import bodyParser from 'body-parser';
-import xml2js from 'xml2js';
 
 
 
@@ -20,7 +19,7 @@ class app{
     }
 
     routes(){
-        this.server.use(routes.router); // Inicializa as rotas);
+        this.server.use(routes.router); // Inicializa as rotas/
     }
 }
 

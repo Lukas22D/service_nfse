@@ -9,7 +9,7 @@ import fs from 'fs';
  * @method consultarNFeRecebidaCompetencia - Consulta NFSe recebida por competência
  * 
  */
-class NfseServiceBarueri {
+class nfseServiceBarueri {
     /**
      * Construtor da classe NfseServiceBarueri
      * @constructor - Construi a autenticação do certificado, com o caminho do certificado e a senha
@@ -17,30 +17,31 @@ class NfseServiceBarueri {
      */
 
     constructor() {
-        try{
+        /*
+        try {
 
-        this.certPath = null
-        this.passphrase = null
-        this.httpsAgent = new https.Agent({
-            pfx: fs.readFileSync(this.certPath),
-            passphrase: this.passphrase,
-            rejectUnauthorized: false
-        });
-      
-    }catch(error){
-        console.log('Erro ao carregar certificado: ', error);
-    }
+          this.certPath = null
+            this.passphrase = null
+            this.httpsAgent = new https.Agent({
+                pfx: fs.readFileSync(this.certPath),
+                passphrase: this.passphrase,
+                rejectUnauthorized: false
+            });
+
+        } catch (error) {
+            console.log('Erro ao carregar certificado: ', error);
+        } */
     }
 
     async consultarNFeRecebidaPeriodo(periodo_inicial, periodo_final, cnpj_tomador, cnpj_prestador) {
-         const xml_builder = `
+        const xml_builder = `
             <NFeRecebidaPeriodo xmlns="http://www.barueri.sp.gov.br/nfe">
                 <CPFCNPJTomador>${cnpj_tomador}</CPFCNPJTomador>
                 <DataInicial>${periodo_inicial}</DataInicial>
                 <DataFinal>${periodo_final}</DataFinal>
                 ${cnpj_prestador ? `<CPFCNPJPrestador>${cnpj_prestador}</CPFCNPJPrestador>` : ''}
                 <Pagina>1</Pagina>
-            </NFeRecebidaPeriodo>
+            </NFeRecebidaPeriodo>f
         `;
         const versaoSchema = '1';  // Ajuste se necessário de acordo com a versão do schema correta
 
@@ -57,7 +58,7 @@ class NfseServiceBarueri {
                         </soap12:Body>
                     </soap12:Envelope>`,
                 {
-                    httpsAgent: this.httpsAgent,
+                  //  httpsAgent: this.httpsAgent,
                     headers: {
                         'Content-Type': 'application/soap+xml; charset=utf-8',
                         'SOAPAction': 'https://servicos.barueri.sp.gov.br/nfewsxml/wsgeraxml.asmx?op=ConsultaNFeRecebidaPeriodo'
@@ -66,7 +67,7 @@ class NfseServiceBarueri {
             );
 
             const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
-            return {message: JSON.stringify(result) , status: 200};
+            return { message: JSON.stringify(result), status: 200 };
 
         } catch (error) {
             console.log(error);
@@ -75,7 +76,7 @@ class NfseServiceBarueri {
     }
 
     async consultarNFeRecebidaCompetencia(cnpj_tomador, competencia, cnpj_prestador) {
-        
+
         const xml_builder = `
             <NFeRecebidaCompetencia xmlns="http://www.barueri.sp.gov.br/nfe">
                 <CPFCNPJTomador>${cnpj_tomador}</CPFCNPJTomador>
@@ -118,4 +119,4 @@ class NfseServiceBarueri {
 
 };
 
-export default new NfseServiceBarueri;
+export default new nfseServiceBarueri;
