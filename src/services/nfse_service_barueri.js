@@ -2,6 +2,10 @@ import xml2js from 'xml2js';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs';
+import dotenv from 'dotenv';
+import soap, { createClientAsync } from 'soap';
+
+dotenv.config();
 /**
  * Serviço para consulta de NFSe de Barueri
  * @class NfseServiceBarueri
@@ -33,18 +37,28 @@ class nfseServiceBarueri {
         } */
     }
 
-    async consultarNFeRecebidaPeriodo(periodo_inicial, periodo_final, cnpj_tomador, cnpj_prestador) {
+    async consultarNFeRecebidaPeriodo(periodo_inicial, periodo_final, cnpj_tomador, cnpj_prestador= null) {
+    
+        const pfx_path = fs.readFileSync('asap.pfx');
+        const passphrase = '123456';
+    
+        const httpsAgent = new https.Agent({
+           pfx: pfx_path,
+           passphrase: passphrase,
+           rejectUnauthorized: false, // Temporarily disable certificate validation for debugging
+        });
+    
         const xml_builder = `
-            <NFeRecebidaPeriodo xmlns="http://www.barueri.sp.gov.br/nfe">
+            <ConsultaNFeRecebidaPeriodo xmlns="http://www.barueri.sp.gov.br/nfe">
                 <CPFCNPJTomador>${cnpj_tomador}</CPFCNPJTomador>
                 <DataInicial>${periodo_inicial}</DataInicial>
                 <DataFinal>${periodo_final}</DataFinal>
                 ${cnpj_prestador ? `<CPFCNPJPrestador>${cnpj_prestador}</CPFCNPJPrestador>` : ''}
                 <Pagina>1</Pagina>
-            </NFeRecebidaPeriodo>f
+            </ConsultaNFeRecebidaPeriodo>
         `;
-        const versaoSchema = '1';  // Ajuste se necessário de acordo com a versão do schema correta
-
+        const versaoSchema = '1';  // Versão correta baseada no manual
+    
         try {
             const response = await axios.post(
                 'https://servicos.barueri.sp.gov.br/nfewsxml/wsgeraxml.asmx',
@@ -58,24 +72,33 @@ class nfseServiceBarueri {
                         </soap12:Body>
                     </soap12:Envelope>`,
                 {
-                  //  httpsAgent: this.httpsAgent,
+                    httpsAgent: httpsAgent,
                     headers: {
                         'Content-Type': 'application/soap+xml; charset=utf-8',
                         'SOAPAction': 'https://servicos.barueri.sp.gov.br/nfewsxml/wsgeraxml.asmx?op=ConsultaNFeRecebidaPeriodo'
                     }
                 }
             );
+    
 
             const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
+            // Processa a resposta
             return { message: JSON.stringify(result), status: 200 };
-
         } catch (error) {
             console.log(error);
-            return { message: error, status: error.response.status };
+            return { message: error, status: error.response ? error.response.status : 500 };
         }
     }
 
-    async consultarNFeRecebidaCompetencia(cnpj_tomador, competencia, cnpj_prestador) {
+    async consultarNFeRecebidaCompetencia(cnpj_tomador, competencia, cnpj_prestador = null) {
+        const pfx_path = fs.readFileSync('asap.pfx');
+        const passphrase = '123456';
+    
+        const httpsAgent = new https.Agent({
+           pfx: pfx_path,
+           passphrase: passphrase,
+           rejectUnauthorized: false, // Temporarily disable certificate validation for debugging
+        });
 
         const xml_builder = `
             <NFeRecebidaCompetencia xmlns="http://www.barueri.sp.gov.br/nfe">
@@ -100,7 +123,7 @@ class nfseServiceBarueri {
                         </soap12:Body>
                     </soap12:Envelope>`,
                 {
-                    httpsAgent: this.httpsAgent,
+                    httpsAgent: httpsAgent,
                     headers: {
                         'Content-Type': 'application/soap+xml; charset=utf-8',
                         'SOAPAction': 'https://servicos.barueri.sp.gov.br/nfewsxml/wsgeraxml.asmx?op=ConsultaNFeRecebidaCompetencia'
@@ -109,6 +132,7 @@ class nfseServiceBarueri {
             );
 
             const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
+            console.log(result);
             return { message: JSON.stringify(result), status: 200 };
 
         } catch (error) {

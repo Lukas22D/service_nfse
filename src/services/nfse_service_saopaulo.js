@@ -96,6 +96,55 @@ class nfseServiceSaoPaulo {
         }
     }
 
+    async consultaLote(cnpJ_remetente, numero_lote) {
+        const dados = {
+            versaoSchema: 1, // Substitua pela versão correta
+            mensagemXML: `
+              <PedidoConsultaLote xmlns="http://www.prefeitura.sp.gov.br/nfe/ws/">
+                <Cabecalho>
+                  <CNPJRemetente>${cnpJ_remetente}</CNPJRemetente> 
+                  <NumeroLote>${numero_lote}</NumeroLote> 
+                </Cabecalho>
+                <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                  </Signature>
+              </PedidoConsultaLote>
+            `
+          };
+
+          try {
+            const config = {
+              method: 'post',
+              url: 'https://nfe.prefeitura.sp.gov.br/ws/lotenfe.asmx', 
+              headers: { 
+                'Content-Type': 'text/xml;charset=utf-8',
+                'SOAPAction': 'http://www.prefeitura.sp.gov.br/nfe/ws/ConsultaLote' 
+              },
+              httpsAgent: new https.Agent({  
+                // ... (Configurações para seu certificado, como rejectUnauthorized: false para testes)
+              }),
+              data: `
+                <?xml version="1.0" encoding="utf-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                  <soap:Body>   
+        
+                    <ConsultaLote xmlns="http://www.prefeitura.sp.gov.br/nfe/ws/">
+                      <VersaoSchema>${dados.versaoSchema}</VersaoSchema>
+                      <MensagemXML><![CDATA[${dados.mensagemXML}]]></MensagemXML>
+                    </ConsultaLote>
+                  </soap:Body>
+                </soap:Envelope>
+              `
+            };
+
+        } catch (error) {
+            console.log(error);
+            return { message: error.response.data, status: error.response.status };
+        }
+        
+
+          
+    }
+
 }
 
 export default new nfseServiceSaoPaulo(); // Exporta a classe nfseServiceSaoPaulo

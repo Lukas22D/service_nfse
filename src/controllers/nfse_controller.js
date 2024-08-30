@@ -5,8 +5,8 @@ class NfseController {
     
     async create_consult(req, res) {
         try{
-            const {cnpj , data_inicio, data_fim } = req.body;
-            const result = await nfseServiceSaoPaulo.consultaNFeRecebidas(cnpj ,data_inicio , data_fim);
+           // const {cnpj_tomador , periodo_inicial, periodo_final } = req.body;
+            const result = await nfseServiceBarueri.consultarNFeRecebidaPeriodo('2021-01-01', '2021-01-31', '00000000000000');
             return res.status(result.status).json(result.message);
         }catch(error){
             console.log(error);
